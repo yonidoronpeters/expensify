@@ -1,14 +1,33 @@
 import { createStore } from 'redux';
 
-const store = createStore((state = { count: 0 }, action) => {
+const incrementCount = ({ incrementBy = 1 } = {}) => ({
+  type: 'INCREMENT',
+  incrementBy,
+});
+const decrementCount = ({ decrementBy = 1 } = {}) => ({
+  type: 'DECREMENT',
+  decrementBy,
+});
+const setCount = ({ count = 0 } = {}) => ({
+  type: 'SET',
+  count,
+});
+const resetCount = () => ({
+  type: 'RESET',
+});
+
+// Reducers
+// 1. Reducers are pure functions
+// 2. Never set state or action
+const countReducer = (state = { count: 0 }, action) => {
   switch (action.type) {
     case 'INCREMENT':
-      const incrementBy = typeof action.incrementBy === 'number' ? action.incrementBy : 1;
+      const incrementBy = action.incrementBy;
       return {
         count: state.count + incrementBy
       };
     case 'DECREMENT':
-      const decrementBy = typeof action.decrementBy === 'number' ? action.decrementBy : 1;
+      const decrementBy = action.decrementBy;
       return {
         count: state.count - decrementBy
       };
@@ -18,36 +37,23 @@ const store = createStore((state = { count: 0 }, action) => {
       };
     case 'SET':
       return {
-        count: state.count = action.setTo
+        count: state.count = action.count
       };
     default:
       return state;
   }
-});
+};
+
+const store = createStore(countReducer);
 
 const unsubscribe = store.subscribe(() => console.log(store.getState()));
 
-const increment = {
-  type: 'INCREMENT',
-  incrementBy: 5
-};
-const decrement = {
-  type: 'DECREMENT',
-  decrementBy: 10
-};
-const reset = {
-  type: 'RESET'
-};
-const set = {
-  type: 'SET',
-  setTo: 101
-};
-store.dispatch(increment);
+store.dispatch(incrementCount({ incrementBy: 5 }));
+store.dispatch(incrementCount());
 
-store.dispatch(increment);
+store.dispatch(resetCount());
 
-store.dispatch(reset);
+store.dispatch(decrementCount());
+store.dispatch(decrementCount({ decrementBy: 10 }));
 
-store.dispatch(decrement);
-
-store.dispatch(set);
+store.dispatch(setCount({ count: 101 }));
